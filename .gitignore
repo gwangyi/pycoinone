@@ -1,5 +1,5 @@
 
-# Created by https://www.gitignore.io/api/python,macos,linux,windows
+# Created by https://www.gitignore.io/api/python,macos,linux,windows,vim
 
 ### Linux ###
 *~
@@ -146,6 +146,19 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+### Vim ###
+# swap
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+# session
+Session.vim
+# temporary
+.netrwhist
+# auto-generated tag files
+tags
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
@@ -167,4 +180,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.gitignore.io/api/python,macos,linux,windows
+# End of https://www.gitignore.io/api/python,macos,linux,windows,vim
