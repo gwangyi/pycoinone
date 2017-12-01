@@ -7,14 +7,14 @@ import typing
 import requests
 
 
-def _default_nounce() -> str:
-    return str(int(time.time() * 1000))
+def _default_nonce() -> int:
+    return int(time.time() * 1000)
 
 
 class Coinone:
     _base_url = 'https://api.coinone.co.kr/'
     _preferred_method = 'get'
-    _preferred_query = True
+    _preferred_payload = 'params'
 
     @staticmethod
     def _kwargs_to_payload(kwargs: typing.Mapping[str, typing.Any])\
@@ -34,10 +34,9 @@ class Coinone:
         json_opt = kwargs.get('_json_', {})
         payload = self._kwargs_to_payload(kwargs)
 
-        if kwargs.get('_query_', self._preferred_query):
-            r = requests.request(method, url, headers=headers, params=payload)
-        else:
-            r = requests.request(method, url, headers=headers, json=payload)
+        payload_type = kwargs.get('_payload_', self._preferred_payload)
+        r = requests.request(method, url, headers=headers,
+                             **{payload_type: payload})
 
         return typing.cast(typing.Mapping[str, typing.Any], r.json(**json_opt))
 
@@ -60,10 +59,11 @@ class CoinoneV1(Coinone):
 class CoinoneV2(Coinone):
     _base_url = 'https://api.coinone.co.kr/v2/'
     _preferred_method = 'post'
-    _preferred_query = False
+    _preferred_payload = 'json'
 
     def __init__(self, access_token: str, secret_key: str,
-                 nonce: typing.Callable[[], str]=_default_nounce) -> None:
+                 nonce: typing.Callable[[], typing.Any] = _default_nonce)\
+            -> None:
         super().__init__()
         self._nonce = nonce
         self._access_token = access_token
