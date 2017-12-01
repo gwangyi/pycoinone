@@ -31,6 +31,7 @@ class Coinone:
         url = self._base_url + path.lstrip('/')
         headers = kwargs.get('_headers_', {})
         method = kwargs.get('_method_', self._preferred_method).upper()
+        json_opt = kwargs.get('_json_', {})
         payload = self._kwargs_to_payload(kwargs)
 
         if kwargs.get('_query_', self._preferred_query):
@@ -38,7 +39,7 @@ class Coinone:
         else:
             r = requests.request(method, url, headers=headers, json=payload)
 
-        return typing.cast(typing.Mapping[str, typing.Any], r.json())
+        return typing.cast(typing.Mapping[str, typing.Any], r.json(**json_opt))
 
 
 class CoinoneV1(Coinone):

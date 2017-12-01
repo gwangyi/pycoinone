@@ -3,6 +3,47 @@ import typing
 import time
 import threading
 import functools
+import json
+import collections
+import html
+
+
+def to_html(obj: typing.Any) -> str:
+    if isinstance(obj, dict):
+        head_row =\
+                '<tr><th style="width: auto; white-space: nowrap">Field</th>'\
+                '<th style="width: 100%">Value</th>'
+        return "".join((
+            elem for elems in [
+                [
+                    '<table style="table-layout: auto; width: 100%"><thead>',
+                    head_row,
+                    "</tr></thead><tbody>"
+                ],
+                (
+                    '<tr><td><pre style="width: auto; white-space: nowrap">'
+                    '{field}</pre></td>'
+                    "<td>{value}</td></tr>".format(
+                        field=key,
+                        value=to_html(value)
+                    ) for key, value in obj.items()
+                ),
+                [
+                    "</tbody></table>"
+                ]
+            ] for elem in elems))
+    elif isinstance(obj, list):
+        return "".join(term for terms in [
+            ["<ul>"],
+            ("<li>" + to_html(elem) + "</li>" for elem in obj),
+            ["</ul>"]
+        ] for term in terms)
+    elif isinstance(obj, bool):
+        return "🔵 True" if obj else "🔴 False"
+    elif hasattr(obj, '_repr_html_'):
+        return str(obj._repr_html_())
+    else:
+        return html.escape(repr(obj))
 
 
 def _process_error(path: str, response: typing.Mapping[str, typing.Any])\
@@ -49,9 +90,36 @@ def _rate_limited(count: int, period: float)\
     return decorator
 
 
+class DictObject(dict):
+    def __getattr__(self, key: str) -> typing.Any:
+        if key in self:
+            return self[key]
+        else:
+            raise AttributeError(key)
+
+    def __setattr__(self, key: str, value: typing.Any) -> None:
+        self[key] = value
+
+    def __delattr__(self, key: str) -> None:
+        if key in self:
+            del self[key]
+        else:
+            raise AttributeError(key)
+
+    def __dir__(self) -> typing.Iterable[str]:
+        return [key for keys in (super().__dir__(), self.keys())
+                for key in keys]
+
+    def _repr_html_(self) -> str:
+        return to_html(self)
+
+
 class _Coinone(raw.Coinone):
     def _execute(self, path: str, **kwargs: typing.Any)\
             -> typing.Mapping[str, typing.Any]:
+        json_opt = kwargs.get('_json_', {})
+        json_opt['object_hook'] = DictObject
+        kwargs['_json_'] = json_opt
         return _process_error(path, super()._execute(path, **kwargs))
 
 
