@@ -43,7 +43,14 @@ def to_html(obj: typing.Any) -> str:
     elif hasattr(obj, '_repr_html_'):
         return str(obj._repr_html_())
     else:
-        return html.escape(repr(obj))
+        return ''.join([
+            '<span onclick="$(\'input\', this).show().val('
+            '$(\'span\', this).hide().text()).focus()[0].'
+            'select(); document.execCommand(\'copy\')"><span>',
+            html.escape(repr(obj)),
+            '</span><input style="text-align: right; '
+            'display: none; border: none; width: 100%; '
+            'background: transparent;"></span>'])
 
 
 def _process_error(path: str, response: typing.Mapping[str, typing.Any])\
