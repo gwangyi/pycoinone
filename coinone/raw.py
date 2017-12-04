@@ -5,6 +5,7 @@ import hashlib
 import hmac
 import typing
 import requests
+import sys
 
 
 def _default_nonce() -> int:
@@ -38,7 +39,12 @@ class Coinone:
         r = requests.request(method, url, headers=headers,
                              **{payload_type: payload})
 
-        return typing.cast(typing.Mapping[str, typing.Any], r.json(**json_opt))
+        try:
+            return typing.cast(typing.Mapping[str, typing.Any],
+                               r.json(**json_opt))
+        except Exception:
+            sys.stderr.write(r.text)
+            raise
 
 
 class CoinoneV1(Coinone):
