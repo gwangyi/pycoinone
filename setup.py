@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pycoinone',
-    version='2017.11.30a0.dev0',
+    version='2017.12.04a0.dev0',
     packages=['coinone'],
     url='http://github.com/gwangyi/pycoinone',
     license='MIT',
