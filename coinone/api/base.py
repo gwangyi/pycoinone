@@ -1,6 +1,10 @@
 import typing
 import functools
+from .common.enums import Currency
 from ..core import to_html
+
+
+_T = typing.TypeVar('_T')
 
 
 class ApiMagic:
@@ -46,12 +50,18 @@ class ApiMagic:
         })
 
 
+class CurrencyMagic(ApiMagic):
+    _currency = Currency.BTC
+
+    def __getitem__(self: _T, currency: Currency) -> _T:
+        return _set_currency(self, currency)
+
+
 class ApiResult(ApiMagic):
     result: str
     errorCode: str
 
 
-_T = typing.TypeVar('_T')
 _T_magic = typing.TypeVar('_T_magic', bound=ApiMagic, covariant=True)
 
 
@@ -135,3 +145,25 @@ def post(fn: _T) -> _T:
 
 def form_data(fn: _T) -> _T:
     return _add_param(fn, _payload_='data')
+
+
+def currency_method(fn: _T) -> _T:
+    fn_ = typing.cast(typing.Callable, fn)
+
+    @functools.wraps(fn_)
+    def wrapper(self: ApiMagic, *args: typing.Any, **kwargs: typing.Any)\
+            -> typing.Any:
+        if hasattr(self, '_currency') and 'currency' not in kwargs:
+            kwargs['currency'] = getattr(self, '_currency')
+        return fn_(self, *args, **kwargs)
+
+    return typing.cast(_T, wrapper)
+
+
+def _set_currency(self: _T, currency: Currency) -> _T:
+    if isinstance(self, CurrencyMagic):
+        obj = typing.cast(_T, self.__class__(self._obj))
+        if isinstance(obj, CurrencyMagic):
+            obj._currency = currency
+        return obj
+    return self
