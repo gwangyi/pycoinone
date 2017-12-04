@@ -85,6 +85,41 @@ def _add_param(fn: _T, **kwargs: typing.Any) -> _T:
     return typing.cast(_T, wrapper)
 
 
+def delegated_getter(name: str) -> typing.Callable[[_T], _T]:
+    def decorator(fn: _T) -> _T:
+        fn_ = typing.cast(typing.Callable, fn)
+
+        @functools.wraps(fn_)
+        def wrapper(self: typing.Any) -> typing.Any:
+            return getattr(getattr(self, name), fn_.__name__)
+
+        return typing.cast(_T, wrapper)
+    return decorator
+
+
+def delegated(name: str) -> typing.Callable[[_T], _T]:
+    def decorator(fn: _T) -> _T:
+        fn_ = typing.cast(typing.Callable, fn)
+
+        @functools.wraps(fn_)
+        def wrapper(self: typing.Any, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+            return getattr(getattr(self, name), fn_.__name__)(*args, **kwargs)
+
+        return typing.cast(_T, wrapper)
+    return decorator
+
+
+def magic_result(fn: _T) -> _T:
+    fn_ = typing.cast(typing.Callable, fn)
+    ret_type: typing.Type = fn_.__annotations__['return']
+
+    @functools.wraps(fn_)
+    def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+        return ret_type(fn_(*args, **kwargs))
+
+    return typing.cast(_T, wrapper)
+
+
 def post(fn: _T) -> _T:
     return _add_param(fn, _method_='post')
 
