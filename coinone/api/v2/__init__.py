@@ -2,6 +2,7 @@ import typing
 
 from .account import Account
 from .order import Order
+from .transaction import Transaction
 from ..base import magic_result, delegated_getter
 from ..common.public import PublicApiMixin
 from ...core import CoinoneV2 as _CoinoneV2
@@ -19,3 +20,7 @@ class CoinoneV2(PublicApiMixin):
     @property
     def order(self) -> Order:
         return Order(self._api.order)
+
+    @property
+    def transaction(self) -> Transaction:
+        return Transaction(self._api.transaction)

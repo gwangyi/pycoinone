@@ -59,12 +59,20 @@ def magic_method(fn: _T) -> _T:
     fn_ = typing.cast(typing.Callable[..., typing.Any], fn)
     ret_type: ApiMagic = fn_.__annotations__['return']
     name = fn_.__name__
+    def_kwargs = {}
+
+    prefix, *postfix = name.rsplit('_', 2)
+    if postfix and postfix[0] in ('get', 'post'):
+        def_kwargs['_method_'] = postfix[0]
+        name = prefix
 
     @functools.wraps(fn_)
     def wrapper(self: typing.Any, *args: typing.Any, **kwargs: typing.Any)\
             -> _T_magic:
+        kwargs_ = dict(def_kwargs)
+        kwargs_.update(kwargs)
         if hasattr(self, '__getattr__'):
-            obj: typing.Any = self.__getattr__(name)(*args, **kwargs)
+            obj: typing.Any = self.__getattr__(name)(*args, **kwargs_)
             return typing.cast(_T_magic, ret_type(obj))
         else:
             raise AttributeError(name)
@@ -102,7 +110,8 @@ def delegated(name: str) -> typing.Callable[[_T], _T]:
         fn_ = typing.cast(typing.Callable, fn)
 
         @functools.wraps(fn_)
-        def wrapper(self: typing.Any, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+        def wrapper(self: typing.Any, *args: typing.Any,
+                    **kwargs: typing.Any) -> typing.Any:
             return getattr(getattr(self, name), fn_.__name__)(*args, **kwargs)
 
         return typing.cast(_T, wrapper)

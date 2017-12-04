@@ -92,15 +92,17 @@ def _rate_limited(count: int, period: float)\
 
 class DictObject(dict):
     def __getattr__(self, key: str) -> typing.Any:
+        key = key.rstrip('_')
         if key in self:
             return self[key]
         else:
             raise AttributeError(key)
 
     def __setattr__(self, key: str, value: typing.Any) -> None:
-        self[key] = value
+        self[key.rstrip('_')] = value
 
     def __delattr__(self, key: str) -> None:
+        key = key.rstrip('_')
         if key in self:
             del self[key]
         else:
