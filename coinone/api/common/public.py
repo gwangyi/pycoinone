@@ -27,14 +27,34 @@ class Trades(ApiResult):
     currency: str
 
 
-class Ticker(ApiResult):
+class _Ticker(ApiMagic):
     high: int
     low: int
     last: int
     first: int
     volume: float
-    timestamp: int
+    yesterday_high: int
+    yesterday_low: int
+    yesterday_last: int
+    yesterday_first: int
+    yesterday_volume: float
     currency: str
+
+
+class Ticker(_Ticker, ApiResult):
+    timestamp: int
+
+
+class TickerAll(ApiResult):
+    btc: _Ticker
+    bch: _Ticker
+    eth: _Ticker
+    etc: _Ticker
+    xrp: _Ticker
+    qtum: _Ticker
+    iota: _Ticker
+    ltc: _Ticker
+    timestamp: int
 
 
 class PublicApiMixin:
@@ -55,3 +75,6 @@ class PublicApiMixin:
     @delegated('_public_api')
     def ticker(self, currency: str) -> Ticker:
         ...
+
+    def ticker_all(self) -> TickerAll:
+        return TickerAll(self._public_api.ticker(currency='all'))
