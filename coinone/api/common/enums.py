@@ -11,6 +11,8 @@ class Currency(str, enum.Enum):
     IOTA = 'iota'
     LTC = 'ltc'
 
+    KRW = 'krw'
+
 
 class OrderType(int, enum.Enum):
     Ask = 1
