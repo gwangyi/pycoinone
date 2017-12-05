@@ -13,6 +13,8 @@ class ApiMagic:
     __annotations__: typing.Dict[str, typing.Type] = {}
     _subs: typing.Dict[typing.Any, typing.Type] = {}
 
+    _annotations: typing.Dict[str, typing.Type] = {}
+
     @classmethod
     def _substitute(cls) -> typing.Dict[typing.Any, typing.Type]:
         if hasattr(cls, '__origin__') and hasattr(cls, '__args__'):
@@ -22,13 +24,21 @@ class ApiMagic:
             return subs
         return {}
 
+    @classmethod
+    def __init_subclass__(cls, *args: typing.Any, **kwargs: typing.Any)\
+            -> None:
+        cls._annotations = dict((k, v) for base in cls.__bases__
+                                if hasattr(base, '__annotations__')
+                                for k, v in base.__annotations__.items())
+        cls._annotations.update(cls.__annotations__)
+
     def __init__(self, obj: typing.Any) -> None:
         self._obj = obj
 
     def __getattr__(self, key: str) -> typing.Any:
         obj = getattr(self._obj, key)
-        if key in self.__annotations__:
-            tp = self.__annotations__[key]
+        if key in self._annotations:
+            tp = self._annotations[key]
             tp = self._subs.get(tp, tp)
             if hasattr(tp, '__origin__') and\
                     getattr(tp, '__origin__') is typing.List:
@@ -46,7 +56,7 @@ class ApiMagic:
     def _repr_html_(self) -> str:
         return to_html({
             key: getattr(self, key)
-            for key in self.__annotations__
+            for key in self._annotations if not key.startswith('_')
         })
 
 
