@@ -30,11 +30,12 @@ def to_html(obj: typing.Any) -> str:
                 ),
                 [
                     "</tbody></table>"
+                    '</div>'
                 ]
             ] for elem in elems))
     elif isinstance(obj, list):
         return "".join(term for terms in [
-            ["<ul>"],
+            ['<ul style="max-height: 20em; overflow-y: auto">'],
             ("<li>" + to_html(elem) + "</li>" for elem in obj),
             ["</ul>"]
         ] for term in terms)
