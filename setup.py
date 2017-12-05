@@ -2,8 +2,14 @@ from setuptools import setup
 
 setup(
     name='pycoinone',
-    version='2017.12.04a0.dev0',
-    packages=['coinone'],
+    version='2017.12.05a0.dev0',
+    packages=[
+        'coinone',
+        'coinone.api',
+        'coinone.api.common',
+        'coinone.api.v1',
+        'coinone.api.v2'
+    ],
     url='http://github.com/gwangyi/pycoinone',
     license='MIT',
     author='Sungkwang Lee',
