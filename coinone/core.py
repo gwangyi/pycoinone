@@ -86,7 +86,7 @@ def _rate_limited(count: int, period: float)\
             if last_call_time < now - period or left_call_count <= 0:
                 if left_call_count <= 0:
                     time_to_sleep = last_call_time + period - now
-                    if time_to_sleep > 0
+                    if time_to_sleep > 0:
                         time.sleep(time_to_sleep)
                 last_call_time = time.time()
                 left_call_count = count
