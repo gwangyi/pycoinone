@@ -18,6 +18,7 @@ class Balance(ApiResult):
     qtum: CurrencyInfo[float]
     iota: CurrencyInfo[float]
     ltc: CurrencyInfo[float]
+    btg: CurrencyInfo[float]
     krw: CurrencyInfo[int]
     normalWallets: typing.List[NormalWallet]
 
@@ -34,6 +35,7 @@ class DailyBalanceInfo(ApiMagic):
     qtum: float
     iota: float
     ltc: float
+    btg: float
 
 
 class DailyBalance(ApiResult):
@@ -50,6 +52,7 @@ class WalletAddress(ApiMagic):
     qtum: str
     iota: str
     ltc: str
+    btg: str
 
 
 class DepositAddress(ApiResult):
@@ -65,6 +68,7 @@ class FeeRates(ApiMagic):
     qtum: FeeRate
     iota: FeeRate
     ltc: FeeRate
+    btg: FeeRate
 
 
 class _UserInfo(ApiMagic):

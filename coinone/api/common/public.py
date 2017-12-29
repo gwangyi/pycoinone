@@ -54,6 +54,7 @@ class TickerAll(ApiResult):
     qtum: _Ticker
     iota: _Ticker
     ltc: _Ticker
+    btg: _Ticker
     timestamp: int
 
 

@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pycoinone',
-    version='2017.12.05a0.dev2',
+    version='2017.12.29a0',
     packages=[
         'coinone',
         'coinone.api',
