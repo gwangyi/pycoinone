@@ -11,6 +11,7 @@ class Currency(str, enum.Enum):
     IOTA = 'iota'
     LTC = 'ltc'
     BTG = 'btg'
+    OMG = 'omg'
 
     KRW = 'krw'
 
